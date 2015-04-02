@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Rendered Chart{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <div class="row">
+        <div class="controller-container">
+        <div class="col-lg-12">
+            <div id="results_chart"></div>
+        </div>
+        </div>
+    </div>
+    <div class="widget-container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-xs-2">
+                <div class="widget">
+                    <div class="widget-body">
+                        <div class="widget-content pull-left">
+                            {% if context.prefix_symbol == "None" %}
+                            <div class="title">{{ context.target_min|round(2, "floor") }}</div>
+                            {% else %}
+                            <div class="title">{{ context.prefix_symbol }}{{ context.target_min|round(2, "floor") }}</div>
+                            {% endif %}
+                            <div class="comment">Min</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-xs-2">
+                <div class="widget">
+                    <div class="widget-body">
+                        <div class="widget-content pull-left">
+                            {% if context.prefix_symbol == "None" %}
+                            <div class="title">{{ context.target_max|round(2, "floor") }}</div>
+                            {% else %}
+                            <div class="title">{{ context.prefix_symbol }}{{ context.target_max|round(2, "floor") }}</div>
+                            {% endif %}
+                            <div class="comment">Max</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-xs-2">
+                <div class="widget">
+                    <div class="widget-body">
+                        <div class="widget-content pull-left">
+                            {% if context.prefix_symbol == "None" %}
+                            <div class="title">{{ context.target_avg|round(2, "floor") }}</div>
+                            {% else %}
+                            <div class="title">{{ context.prefix_symbol }}{{ context.target_avg|round(2, "floor") }}</div>
+                            {% endif %}
+                            <div class="comment">Average</div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <p class="text-center"><a href="charts/{{ context.hash_link }}">Share this chart</a></p>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block charts_js %}
+    <script type="text/javascript">
+    // Object used to hold chart options, such as formatting and the keys
+    var chart = {};
+    chart.type = "{{ context.chart_type|safe }}";
+
+    // This is the JSON output of the SQL
+    var chart_data = {{ context.chart_data|safe }};
+
+    // Formatting options for our chart
+    chart.date_format = "{{ context.date_format|safe }}";
+    chart.chart_title = "{{ context.chart_title|safe }}";
+    chart.target_variable = "{{ context.target_variable }}";
+    chart.x_accessor = "x1";
+    chart.width = document.getElementById("results_chart").offsetWidth;
+    chart.height = 400;
+
+    // Grabbing the prefix symbol for our charts
+    var prefix_opt = "{{ context.prefix_symbol|safe }}";
+    if (prefix_opt !== "None") {
+        chart.prefix_symbol = prefix_opt;
+    } else {
+        chart.prefix_symbol = "";
+    }
+
+    // Should we fill the area underneath the chart?
+    var chart_fill = "{{ context.area_fill|safe }}";
+    if (chart_fill === "Filled") {
+        chart.area_fill = true;
+    } else {
+        chart.area_fill = false;
+    }
+
+    // Grabbing the y keys out of the data
+    chart.data_keys = [];
+    chart.data_keys = _.each(Object.keys(chart_data[0]), function(key) {
+        chart.data_keys.push(key);
+    });
+    var re = new RegExp("y[0-9]");
+    var y_keys = [];
+    chart.y_keys = _.each(chart.data_keys, function(key) {
+        if (re.exec(key)) {
+            y_keys.push(key);
+        }
+    });
+    chart.y_keys = y_keys;
+
+    if (chart.type === "Time Series") {
+        // Converts the data into something MetricsGraphics can use, specifically for dates
+        chart_data = MG.convert.date(chart_data, chart.x_accessor, chart.date_format);
+
+        MG.data_graphic({
+            data: chart_data,
+            title: chart.chart_title,
+            description: chart.chart_title,
+            width: chart.width,
+            height: chart.height,
+            area: chart.area_fill,
+            show_secondary_x_label: true,
+            y_extended_ticks: true,
+            linked: false,
+            target: "#results_chart",
+            x_accessor: chart.x_accessor,
+            y_accessor: chart.y_keys,
+            yax_units: chart.prefix_symbol,
+            aggregate_rollover: true
+        });
+    } else if (chart.type === "Categorical (Bar Chart)") {
+        // Draws a bar chart for more categorical/non-TS data
+        MG.data_graphic({
+            data: chart_data,
+            title: chart.chart_title,
+            description: chart.chart_title,
+            chart_type: "bar",
+            bar_orientation: "vertical",
+            width: chart.width,
+            height: chart.height,
+            area: false,
+            show_years: false,
+            y_extended_ticks: true,
+            target: "#results_chart",
+            x_accessor: chart.x_accessor,
+            y_accessor: chart.y_keys,
+            yax_units: chart.prefix_symbol
+        });
+    }
+    </script>
+{% endblock %}

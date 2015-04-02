@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Build a Chart{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 help-container">
+            <h3>How to use this tool:</h3>
+            <p>Actually, pretty easily, <em>if you know some SQL.</em></p>
+            <p>In your <code>SELECT</code> statement, pick some things you want to measure, and then use <code>AS</code>
+            to label them <code>y[1-5]</code>, and choose a single value to act as your x-accessor by using <code>AS x1</code>.
+            <br><br>Example:</p>
+            <pre>SELECT SUM(transaction_amt) AS y1,
+                COUNT(email) AS y2,
+                DATE_FORMAT(charge_dt, '%Y-%m-%d') AS x1
+                FROM stg_contribution
+                WHERE charge_dt >= '2015-01-01'
+                AND charge_dt <= '2015-01-31'
+                AND contribution_status IN (3,8)
+                AND gateway_id IN (5,8,9,12)
+                GROUP BY x1
+                ORDER BY x1 ASC</pre>
+            <p>You can also use the formatting options fields to set things like the chart title. You may also
+            specify a variable for which to find the min, max, and average of. If you do not specify a variable,
+            the script will automatically find the min, max, and average of y1. All time formatting is done using
+            the <a href="https://github.com/mbostock/d3/wiki/Time-Formatting" target="_blank">d3.js time formatting rules.</a></p>
+        </div>
+    </div>
+    <div class="row controller-row">
+        <div class="col-lg-12 sql-container">
+            <form action="sql" method="POST">
+                <div class="form-group">
+                    <div class="row sql-box">
+                        <div class="col-lg-12">
+                        <label for="sqlViz">Enter some SQL here:</label>
+                        <textarea class="form-control" rows="15" id="sqlViz" name="sql"></textarea>
+                        </div>
+                    </div>
+                    <div class="row option-box">
+                        <div class="col-lg-6">
+                          <label for="title_input">Chart Title:</label>
+                          <input type="text" id="title_input" class="inputs form-control" name="chart_title" placeholder="Enter chart title...">
+                        </div>
+                        <div class="col-lg-6">
+                          <label for="date_format_input">Date Format:</label>
+                          <input type="text" id="date_format_input" class="inputs form-control" name="date_format" placeholder="Enter date format...">
+                        </div>
+                    </div>
+                    <div class="row option-box">
+                        <div class="col-lg-6">
+                          <label for="title_input">Find min, max, and average of:</label>
+                          <input type="text" id="stats_id" class="inputs form-control" name="target_variable" placeholder="Enter a y variable here...">
+                        </div>
+                        <div class="col-lg-6">
+                          <label for="chart_type_selector">Chart Type:</label>
+                          <select class="form-control" id="chart_type_selector" name="chart_type">
+                              <option>Time Series</option>
+                              <option>Categorical (Bar Chart)</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="row option-box">
+                        <div class="col-lg-6">
+                          <label for="area_id">Area fill:</label>
+                          <select class="form-control" id="area_id" name="area_fill">
+                              <option>Filled</option>
+                              <option>No Fill</option>
+                          </select>
+                        </div>
+                        <div class="col-lg-6">
+                          <label for="prefix_symbol">Prefix Symbol:</label>
+                          <select class="form-control" id="prefix_symbol" name="prefix_symbol">
+                              <option>$</option>
+                              <option>None</option>
+                          </select>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center button-p">
+                    <button type="submit" class="btn btn-default">Get a chart</button>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

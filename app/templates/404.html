@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}404{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="text-center">Uh-oh, this page doesn't exist!</h3>
+            <p class="text-center">You can either return to <a href="{{ url_for('home.index') }}">the homepage</a>,
+            or continue to be mesmerized by the number one Vice President of our hearts.</p>
+            <p class="text-center"><img src="{{ url_for('home.static', filename='images/404.gif') }}"></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
