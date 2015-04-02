@@ -39,4 +39,8 @@ You can break your timeseries into any date format you choose -- down to the ver
 to specify how MetricsGraphics should interpret your dates.
 
 ### Note:
-* The base application is set up to use MySQL, but this should be usable by whatever DB you like.
+
+The base application is set up to use MySQL, but this should be usable by whatever DB you like.
+
+### Setup
+*Directions incoming...*
