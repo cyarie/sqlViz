@@ -25,7 +25,7 @@ def return_chart(hash_link=""):
     return render_template("charts/{0}".format(_filename))
 
 
-@visualizer.route('/sql', methods=["POST"])
+@visualizer.route('/sql', methods=["GET", "POST"])
 def parse_sql():
     if request.method == "POST":
         if len(request.form["sql"]) > 0:
@@ -38,6 +38,7 @@ def parse_sql():
                 chart_type = request.form["chart_type"]
                 prefix_symbol = request.form["prefix_symbol"]
                 area_fill = request.form["area_fill"]
+                stats_check = 0
                 cursor = replica_connect()
                 cursor.execute(sql_string)
                 data = cursor.fetchall()
@@ -56,6 +57,7 @@ def parse_sql():
                     target_min = min(val_list)
                     target_max = max(val_list)
                     target_avg = sum(val_list) / len(val_list)
+                    stats_check = 1
                 else:
                     target_min = 0
                     target_max = 0
@@ -80,6 +82,7 @@ def parse_sql():
                            "target_min": target_min,
                            "target_max": target_max,
                            "target_avg": target_avg,
+                           "stats_check": stats_check,
                            "prefix_symbol": prefix_symbol,
                            "area_fill": area_fill,
                            "hash_link": hash_link}
@@ -94,3 +97,5 @@ def parse_sql():
                 return render_template("visualizer/sqlError.html", error=e)
         else:
             return render_template("visualizer/sqlError.html", error="You didn't enter any SQL.")
+    else:
+        return render_template("visualizer/charts_index.html")
