@@ -1,11 +1,11 @@
 # The SQL Visualizer:
-## A Cheap Way to Visualize Data
+### A Cheap Way to Visualize Data
 
 ### Why
 
 Sometimes, you really, really want to pull a quick visualization of some SQL you just wrote, but don't want to
 deal with Tableau licenses, or paying tremendous amounts of money for something similar. You don't need an entire
-dashboard, you don't need a bunch of filters -- you need the results of your SQL converted to somethingl like JSON,
+dashboard, you don't need a bunch of filters -- you need the results of your SQL converted to something like JSON,
 and put into a chart for quick and easy display. If that's you, you're in the right place!
 
 ### How
