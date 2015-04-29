@@ -1,3 +1,5 @@
+# CURRENTLY DEPRECATED IN FAVOR OF A VERSION THAT EXISTS ON HEROKU: http://secure-reaches-7949.herokuapp.com/visualizer/
+_Updated repo coming soon..._
 # The SQL Visualizer:
 ### A Cheap Way to Visualize Data
 
